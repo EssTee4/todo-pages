@@ -1,18 +1,24 @@
+-- Reset schema (safe for fresh DB)
+DROP TABLE IF EXISTS sessions;
+DROP TABLE IF EXISTS todos;
 DROP TABLE IF EXISTS users;
 
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  username TEXT UNIQUE,
-  password TEXT,
-  salt TEXT
+  username TEXT UNIQUE NOT NULL,
+  password TEXT NOT NULL,
+  salt TEXT NOT NULL
 );
-
-DROP TABLE IF EXISTS todos;
 
 CREATE TABLE todos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER,
-  task TEXT,
+  user_id INTEGER NOT NULL,
+  task TEXT NOT NULL,
   completed INTEGER DEFAULT 0,
   status TEXT DEFAULT 'todo'
+);
+
+CREATE TABLE sessions (
+  token TEXT PRIMARY KEY,
+  user_id INTEGER NOT NULL
 );

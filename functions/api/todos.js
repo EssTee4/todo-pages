@@ -1,85 +1,89 @@
+// Helper to get session (returns session row { token, user_id } or null)
+async function getSession(request, env) {
+  const cookie = request.headers.get("Cookie") || request.headers.get("cookie") || "";
+  const m = cookie.match(/session=([^;]+)/);
+  if (!m) return null;
+  const token = m[1];
+  const s = await env.DB.prepare("SELECT token, user_id FROM sessions WHERE token = ?").bind(token).first();
+  return s || null;
+}
+
 export async function onRequestGet({ request, env }) {
-  const session = await getUser(request, env);
-  if (!session) return htmlLogin();
+  try {
+    const session = await getSession(request, env);
+    if (!session) return json({ error: "Unauthorized" }, 401);
 
-  const res = await env.DB
-    .prepare("SELECT * FROM todos WHERE user_id = ? ORDER BY id")
-    .bind(session.user_id)
-    .all();
+    const rows = await env.DB
+      .prepare("SELECT id, user_id, task, completed, status FROM todos WHERE user_id = ? ORDER BY id")
+      .bind(session.user_id)
+      .all();
 
-  return json(res.results);
+    return json(rows.results || []);
+  } catch (err) {
+    console.error("todos GET error:", err);
+    return json({ error: "Server error" }, 500);
+  }
 }
 
 export async function onRequestPost({ request, env }) {
-  const session = await getUser(request, env);
-  if (!session) return htmlLogin();
+  try {
+    const session = await getSession(request, env);
+    if (!session) return json({ error: "Unauthorized" }, 401);
 
-  const { task } = await request.json();
-  if (!task) return json({ error: "Missing task" }, 400);
+    const body = await request.json().catch(() => null);
+    if (!body || !body.task) return json({ error: "Missing fields" }, 400);
 
-  const result = await env.DB
-    .prepare("INSERT INTO todos (user_id, task, completed, status) VALUES (?, ?, 0, 'todo')")
-    .bind(session.user_id, task)
-    .run();
+    const r = await env.DB
+      .prepare("INSERT INTO todos (user_id, task, completed, status) VALUES (?, ?, 0, ?)")
+      .bind(session.user_id, body.task, body.status ?? "todo")
+      .run();
 
-  return json({ success: true, id: result.lastRowId });
+    return json({ success: true, id: r.lastRowId }, 201);
+  } catch (err) {
+    console.error("todos POST error:", err);
+    return json({ error: "Server error" }, 500);
+  }
 }
 
 export async function onRequestPut({ request, env }) {
-  const session = await getUser(request, env);
-  if (!session) return htmlLogin();
+  try {
+    const session = await getSession(request, env);
+    if (!session) return json({ error: "Unauthorized" }, 401);
 
-  const { status } = await request.json();
-  const id = new URL(request.url).pathname.split("/").pop();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.id === "undefined") return json({ error: "Missing fields" }, 400);
 
-  await env.DB
-    .prepare("UPDATE todos SET status = ? WHERE id = ? AND user_id = ?")
-    .bind(status, id, session.user_id)
-    .run();
+    await env.DB
+      .prepare("UPDATE todos SET task = COALESCE(?, task), completed = COALESCE(?, completed), status = COALESCE(?, status) WHERE id = ? AND user_id = ?")
+      .bind(body.task ?? null, body.completed ?? null, body.status ?? null, body.id, session.user_id)
+      .run();
 
-  return json({ success: true });
+    return json({ success: true });
+  } catch (err) {
+    console.error("todos PUT error:", err);
+    return json({ error: "Server error" }, 500);
+  }
 }
 
 export async function onRequestDelete({ request, env }) {
-  const session = await getUser(request, env);
-  if (!session) return htmlLogin();
+  try {
+    const session = await getSession(request, env);
+    if (!session) return json({ error: "Unauthorized" }, 401);
 
-  const id = new URL(request.url).pathname.split("/").pop();
+    const body = await request.json().catch(() => null);
+    if (!body || typeof body.id === "undefined") return json({ error: "Missing fields" }, 400);
 
-  await env.DB
-    .prepare("DELETE FROM todos WHERE id = ? AND user_id = ?")
-    .bind(id, session.user_id)
-    .run();
-
-  return json({ success: true });
-}
-
-// helpers
-async function getUser(request, env) {
-  const cookie = request.headers.get("Cookie") || "";
-  const match = cookie.match(/session=([^;]+)/);
-  if (!match) return null;
-
-  const token = match[1];
-  return await env.DB
-    .prepare("SELECT * FROM sessions WHERE token = ?")
-    .bind(token)
-    .first();
+    await env.DB.prepare("DELETE FROM todos WHERE id = ? AND user_id = ?").bind(body.id, session.user_id).run();
+    return json({ success: true });
+  } catch (err) {
+    console.error("todos DELETE error:", err);
+    return json({ error: "Server error" }, 500);
+  }
 }
 
 function json(obj, status = 200) {
   return new Response(JSON.stringify(obj), {
     status,
     headers: { "Content-Type": "application/json" }
-  });
-}
-
-function htmlLogin() {
-  return new Response("Redirecting...", {
-    status: 302,
-    headers: {
-      "Location": "/login.html",
-      "Content-Type": "text/html"
-    }
   });
 }
