@@ -1,21 +1,47 @@
-import { hashPassword } from './crypto.js';
+import { verifyPassword } from "../api/crypto.js";
 
 export async function onRequestPost({ request, env }) {
-  let body;
   try {
-    body = await request.json();
-  } catch (e) {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+    const { username, password } = await request.json();
+
+    if (!username || !password) {
+      return new Response(JSON.stringify({ error: "Missing fields" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    const stmt = env.DB.prepare("SELECT * FROM users WHERE username = ?");
+    const user = await stmt.bind(username).first();
+
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    const isValid = await verifyPassword(password, user.password, user.salt);
+
+    if (!isValid) {
+      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
+
+    return new Response(JSON.stringify({
+      success: true,
+      user_id: user.id
+    }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" }
+    });
+
+  } catch (err) {
+    return new Response(JSON.stringify({ error: "Server error", details: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
-  const username = body.username;
-  const password = body.password;
-  if (!username || !password) return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
-
-  const row = await env.DB.prepare('SELECT id, password_hash, password_salt FROM users WHERE username = ?').bind(username).first();
-  if (!row) return new Response(JSON.stringify({ error: 'Invalid credentials' }), { status: 401 });
-
-  const attempt = await hashPassword(password, row.password_salt);
-  if (attempt !== row.password_hash) return new Response(JSON.stringify({ error: 'Invalid credentials' }), { status: 401 });
-
-  return new Response(JSON.stringify({ success: true, user_id: row.id }), { headers: { 'Content-Type': 'application/json' }});
 }
