@@ -4,12 +4,17 @@ function togglePassword() {
   const p = document.getElementById("password");
   p.type = p.type === "password" ? "text" : "password";
 }
-document.querySelectorAll(".show-password").forEach(el => el.addEventListener("click", togglePassword));
+document.querySelectorAll(".show-password").forEach(el => 
+  el.addEventListener("click", togglePassword)
+);
 
 async function loginUser() {
   const username = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
-  if (!username || !password) { alert("Enter username & password"); return; }
+  if (!username || !password) { 
+    alert("Enter username & password"); 
+    return; 
+  }
 
   try {
     const res = await fetch("/api/login", {
@@ -18,9 +23,17 @@ async function loginUser() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ username, password })
     });
+
     const data = await res.json();
+
     if (data.success) {
-      window.location.href = "/profile";
+
+      // ⭐ FIXED: Save login session
+      localStorage.setItem("user_id", data.user_id);
+
+      // ⭐ FIXED: Correct redirect path
+      window.location.href = "/profile.html";
+      
     } else {
       alert(data.error || "Login failed");
     }

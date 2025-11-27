@@ -1,3 +1,8 @@
+// ⭐ FIXED — redirect if not logged in
+if (!localStorage.getItem("user_id")) {
+  window.location.href = "/login.html";
+}
+
 // state
 let tasks = [];
 let draggedTask = null;
@@ -6,7 +11,7 @@ let draggedTask = null;
 function handlePotentialHtmlRedirect(res) {
   const ct = res.headers.get("content-type") || "";
   if (ct.includes("text/html")) {
-    window.location.href = "/api/login.html";
+    window.location.href = "/login.html";   // ⭐ FIXED path
     return true;
   }
   return false;
@@ -40,6 +45,7 @@ function renderTasks() {
       draggedTask = el;
       el.classList.add("dragging");
     });
+
     el.addEventListener("dragend", () => {
       el.classList.remove("dragging");
       draggedTask = null;
@@ -61,10 +67,11 @@ document.querySelectorAll(".task-list").forEach(list => {
   list.addEventListener("drop", async e => {
     e.preventDefault();
     if (!draggedTask) return;
+
     const id = draggedTask.dataset.id;
     const newStatus = list.parentElement.dataset.status;
 
-    // optimistic move in UI
+    // optimistic update
     list.appendChild(draggedTask);
 
     try {
@@ -75,6 +82,7 @@ document.querySelectorAll(".task-list").forEach(list => {
         body: JSON.stringify({ status: newStatus })
       });
       if (handlePotentialHtmlRedirect(res)) return;
+
       const j = await res.json();
       if (!j.success) alert("Failed to move task");
       else {
@@ -92,6 +100,7 @@ document.querySelectorAll(".task-list").forEach(list => {
 document.getElementById("addBtn").addEventListener("click", async () => {
   const text = document.getElementById("taskInput").value.trim();
   if (!text) return alert("Enter task");
+
   try {
     const res = await fetch("/tasks", {
       method: "POST",
@@ -99,9 +108,12 @@ document.getElementById("addBtn").addEventListener("click", async () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ task: text, status: "todo" })
     });
+
     if (handlePotentialHtmlRedirect(res)) return;
+
     const data = await res.json();
     if (!data.success) return alert(data.error || "Failed to add task");
+
     tasks.push({ id: data.id, task: text, status: "todo" });
     document.getElementById("taskInput").value = "";
     renderTasks();
@@ -115,13 +127,21 @@ document.getElementById("addBtn").addEventListener("click", async () => {
 document.getElementById("deleteSelectedBtn").addEventListener("click", async () => {
   const selected = document.querySelectorAll(".task.selected");
   if (!selected.length) return alert("No tasks selected");
+
   try {
     for (const el of Array.from(selected)) {
       const id = el.dataset.id;
-      const res = await fetch(`/tasks/${id}`, { method: "DELETE", credentials: "include" });
+
+      const res = await fetch(`/tasks/${id}`, { 
+        method: "DELETE", 
+        credentials: "include" 
+      });
+
       if (handlePotentialHtmlRedirect(res)) return;
+
       const j = await res.json();
       if (!j.success) alert("Failed to delete some tasks");
+
       tasks = tasks.filter(t => t.id != id);
       el.remove();
     }
@@ -136,7 +156,8 @@ document.getElementById("logoutBtn").addEventListener("click", async () => {
   try {
     await fetch("/logout", { credentials: "include" });
   } finally {
-    window.location.href = "/api/login.html";
+    localStorage.removeItem("user_id");   // ⭐ FIXED: clear local session
+    window.location.href = "/login.html"; // ⭐ FIXED path
   }
 });
 
