@@ -11,7 +11,7 @@ let draggedTask = null;
 function handlePotentialHtmlRedirect(res) {
   const ct = res.headers.get("content-type") || "";
   if (ct.includes("text/html")) {
-    window.location.href = "/login.html";   // ⭐ FIXED path
+    window.location.href = "/login.html";
     return true;
   }
   return false;
@@ -19,7 +19,7 @@ function handlePotentialHtmlRedirect(res) {
 
 async function loadTasks() {
   try {
-    const res = await fetch("/tasks", { credentials: "include" });
+    const res = await fetch("/api/todos", { credentials: "include" }); // ⭐ FIXED
     if (handlePotentialHtmlRedirect(res)) return;
     tasks = await res.json();
     renderTasks();
@@ -75,12 +75,13 @@ document.querySelectorAll(".task-list").forEach(list => {
     list.appendChild(draggedTask);
 
     try {
-      const res = await fetch(`/tasks/${id}`, {
+      const res = await fetch(`/api/todos/${id}`, {     // ⭐ FIXED
         method: "PUT",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus })
       });
+
       if (handlePotentialHtmlRedirect(res)) return;
 
       const j = await res.json();
@@ -102,7 +103,7 @@ document.getElementById("addBtn").addEventListener("click", async () => {
   if (!text) return alert("Enter task");
 
   try {
-    const res = await fetch("/tasks", {
+    const res = await fetch("/api/todos", {       // ⭐ FIXED
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
@@ -132,9 +133,9 @@ document.getElementById("deleteSelectedBtn").addEventListener("click", async () 
     for (const el of Array.from(selected)) {
       const id = el.dataset.id;
 
-      const res = await fetch(`/tasks/${id}`, { 
-        method: "DELETE", 
-        credentials: "include" 
+      const res = await fetch(`/api/todos/${id}`, {   // ⭐ FIXED
+        method: "DELETE",
+        credentials: "include"
       });
 
       if (handlePotentialHtmlRedirect(res)) return;
@@ -154,10 +155,10 @@ document.getElementById("deleteSelectedBtn").addEventListener("click", async () 
 // logout
 document.getElementById("logoutBtn").addEventListener("click", async () => {
   try {
-    await fetch("/logout", { credentials: "include" });
+    await fetch("/api/logout", { credentials: "include" });  // ⭐ FIXED endpoint if using logout.js
   } finally {
-    localStorage.removeItem("user_id");   // ⭐ FIXED: clear local session
-    window.location.href = "/login.html"; // ⭐ FIXED path
+    localStorage.removeItem("user_id");
+    window.location.href = "/login.html";
   }
 });
 
