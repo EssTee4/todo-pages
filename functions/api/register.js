@@ -1,32 +1,28 @@
-import { generateSalt, hashPassword } from './crypto.js';
+import { generateSalt, hashPassword } from "./crypto.js";
 
 export async function onRequestPost({ request, env }) {
-  let body;
   try {
-    body = await request.json();
+    const { username, password } = await request.json();
+    if (!username || !password) return json({ error: "Missing fields" }, 400);
+
+    const salt = generateSalt();
+    const hash = await hashPassword(password, salt);
+
+    await env.DB
+      .prepare("INSERT INTO users (username, password, salt) VALUES (?, ?, ?)")
+      .bind(username, hash, salt)
+      .run();
+
+    return json({ success: true });
+
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
+    return json({ error: "User exists or DB error", details: e.message }, 400);
   }
+}
 
-  const { username, password } = body;
-  if (!username || !password) {
-    return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
-  }
-
-  const salt = generateSalt();
-  const password_hash = await hashPassword(password, salt);
-
-  try {
-    await env.DB.prepare(
-      'INSERT INTO users (username, password, salt) VALUES (?, ?, ?)'
-    ).bind(username, password_hash, salt).run();
-  } catch (e) {
-    return new Response(JSON.stringify({ error: 'User exists or DB error', details: e.message }), {
-      status: 400
-    });
-  }
-
-  return new Response(JSON.stringify({ success: true }), {
-    headers: { 'Content-Type': 'application/json' }
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json" }
   });
 }

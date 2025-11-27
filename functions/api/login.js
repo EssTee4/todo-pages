@@ -5,43 +5,48 @@ export async function onRequestPost({ request, env }) {
     const { username, password } = await request.json();
 
     if (!username || !password) {
-      return new Response(JSON.stringify({ error: "Missing fields" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return json({ error: "Missing fields" }, 400);
     }
 
-    const stmt = env.DB.prepare("SELECT * FROM users WHERE username = ?");
-    const user = await stmt.bind(username).first();
+    const user = await env.DB
+      .prepare("SELECT * FROM users WHERE username = ?")
+      .bind(username)
+      .first();
 
-    if (!user) {
-      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+    if (!user) return json({ error: "Invalid username or password" }, 400);
 
-    const isValid = await verifyPassword(password, user.password, user.salt);
+    const valid = await verifyPassword(password, user.password, user.salt);
+    if (!valid) return json({ error: "Invalid username or password" }, 400);
 
-    if (!isValid) {
-      return new Response(JSON.stringify({ error: "Invalid username or password" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
-    }
+    // create session token
+    const token = crypto.randomUUID();
 
-    return new Response(JSON.stringify({
-      success: true,
-      user_id: user.id
-    }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
+    // store session
+    await env.DB
+      .prepare("INSERT INTO sessions (token, user_id) VALUES (?, ?)")
+      .bind(token, user.id)
+      .run();
+
+    return new Response(
+      JSON.stringify({ success: true }),
+      {
+        status: 200,
+        headers: {
+          "Content-Type": "application/json",
+          // SESSION COOKIE
+          "Set-Cookie": `session=${token}; Path=/; HttpOnly; SameSite=Lax; Secure`
+        }
+      }
+    );
 
   } catch (err) {
-    return new Response(JSON.stringify({ error: "Server error", details: err.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return json({ error: "Server error", details: err.message }, 500);
   }
+}
+
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: { "Content-Type": "application/json" }
+  });
 }
