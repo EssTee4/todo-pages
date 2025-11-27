@@ -7,18 +7,26 @@ export async function onRequestPost({ request, env }) {
   } catch (e) {
     return new Response(JSON.stringify({ error: 'Invalid JSON' }), { status: 400 });
   }
-  const username = body.username;
-  const password = body.password;
-  if (!username || !password) return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
+
+  const { username, password } = body;
+  if (!username || !password) {
+    return new Response(JSON.stringify({ error: 'Missing fields' }), { status: 400 });
+  }
 
   const salt = generateSalt();
   const password_hash = await hashPassword(password, salt);
 
   try {
-    await env.DB.prepare('INSERT INTO users (username, password_hash, password_salt) VALUES (?, ?, ?)').bind(username, password_hash, salt).run();
+    await env.DB.prepare(
+      'INSERT INTO users (username, password, salt) VALUES (?, ?, ?)'
+    ).bind(username, password_hash, salt).run();
   } catch (e) {
-    return new Response(JSON.stringify({ error: 'User exists or DB error' }), { status: 400 });
+    return new Response(JSON.stringify({ error: 'User exists or DB error', details: e.message }), {
+      status: 400
+    });
   }
 
-  return new Response(JSON.stringify({ success: true }), { headers: { 'Content-Type': 'application/json' }});
+  return new Response(JSON.stringify({ success: true }), {
+    headers: { 'Content-Type': 'application/json' }
+  });
 }
