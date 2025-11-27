@@ -1,9 +1,13 @@
+DROP TABLE IF EXISTS users;
+
 CREATE TABLE users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE,
-  password_hash TEXT,
-  password_salt TEXT
+  password TEXT,
+  salt TEXT
 );
+
+DROP TABLE IF EXISTS todos;
 
 CREATE TABLE todos (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
