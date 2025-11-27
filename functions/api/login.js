@@ -1,52 +1,44 @@
-import { verifyPassword } from "./crypto.js";
+import { v4 as uuid } from "uuid";
 
-export async function onRequestPost({ request, env }) {
+export const onRequestPost = async ({ request, env }) => {
+  const db = env.DB;
+
   try {
-    const body = await request.json().catch(() => null);
-    if (!body) return json({ error: "Invalid JSON" }, 400);
+    const { username, password } = await request.json();
 
-    const { username, password } = body;
-    if (!username || !password) return json({ error: "Missing fields" }, 400);
-
-    const user = await env.DB
-      .prepare("SELECT id, username, password, salt FROM users WHERE username = ?")
-      .bind(username)
+    const user = await db
+      .prepare("SELECT * FROM users WHERE username = ? AND password = ?")
+      .bind(username, password)
       .first();
 
-    if (!user) return json({ error: "Invalid username or password" }, 400);
+    if (!user) {
+      return new Response(JSON.stringify({ error: "Invalid credentials" }), {
+        status: 401,
+        headers: { "Content-Type": "application/json" }
+      });
+    }
 
-    const ok = await verifyPassword(password, user.password, user.salt);
-    if (!ok) return json({ error: "Invalid username or password" }, 400);
+    // create new session token
+    const token = uuid();
 
-    // create session token and store it
-    const token = crypto.randomUUID();
-
-    await env.DB
+    await db
       .prepare("INSERT INTO sessions (token, user_id) VALUES (?, ?)")
       .bind(token, user.id)
       .run();
-
-    // Set cookie — Pages uses HTTPS, so Secure + SameSite=None is OK.
-    // HttpOnly prevents JS access (safer). Path=/ so cookie is sent to /api/*
-    const cookie = `session=${token}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=2592000`;
 
     return new Response(JSON.stringify({ success: true, user_id: user.id }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Set-Cookie": cookie
+        "Set-Cookie":
+          `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`
       }
     });
 
-  } catch (err) {
-    console.error("login error:", err);
-    return json({ error: "Server error", details: err.message }, 500);
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "Login failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" }
+    });
   }
-}
-
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "Content-Type": "application/json" }
-  });
-}
+};
