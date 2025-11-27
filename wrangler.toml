@@ -1,0 +1,8 @@
+name = "todo-pages"
+compatibility_date = "2025-11-27"
+account_id = "<YOUR_ACCOUNT_ID>"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "todo_db"
+database_id = "<YOUR_D1_DATABASE_ID>"

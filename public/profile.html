@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard - ToDo App</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>My Tasks</h2>
+    <button class="logout-btn" id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="add-bar">
+    <input id="taskInput" placeholder="New task..." />
+    <button id="addBtn">Add</button>
+  </div>
+
+  <div class="board">
+    <div class="column" data-status="todo">
+      <h3>To Do</h3>
+      <div class="task-list" id="todo"></div>
+    </div>
+
+    <div class="column" data-status="inProgress">
+      <h3>In Progress</h3>
+      <div class="task-list" id="inProgress"></div>
+    </div>
+
+    <div class="column" data-status="completed">
+      <h3>Completed</h3>
+      <div class="task-list" id="completed"></div>
+    </div>
+  </div>
+
+  <button class="delete-btn" id="deleteSelectedBtn">Delete Selected</button>
+
+<script src="js/profile.js"></script>
+</body>
+</html>
