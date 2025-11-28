@@ -1,44 +1,33 @@
 document.getElementById("loginBtn").addEventListener("click", loginUser);
 
-function togglePassword() {
-  const p = document.getElementById("password");
-  p.type = p.type === "password" ? "text" : "password";
-}
-document.querySelectorAll(".show-password").forEach(el => 
-  el.addEventListener("click", togglePassword)
-);
-
 async function loginUser() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if (!username || !password) { 
-    alert("Enter username & password"); 
-    return; 
+  const username = username.value.trim();
+  const password = password.value.trim();
+
+  if (!username || !password) {
+    return showPopup("Enter username & password", "error");
   }
 
   try {
     const res = await fetch("/api/login", {
       method: "POST",
-      credentials: "include",
+      body: JSON.stringify({ username, password }),
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
     });
 
     const data = await res.json();
 
-    if (data.success) {
-
-      // ⭐ FIXED: Save login session
-      localStorage.setItem("user_id", data.user_id);
-
-      // ⭐ FIXED: Correct redirect path
-      window.location.href = "/profile.html";
-      
-    } else {
-      alert(data.error || "Login failed");
+    if (!res.ok) {
+      showPopup(data.error, "error");
+      return;
     }
+
+    showPopup("Login successful!", "success");
+
+    setTimeout(() => {
+      window.location.href = "/profile.html";
+    }, 700);
   } catch (err) {
-    console.error("login error", err);
-    alert("Network error");
+    showPopup("Network error", "error");
   }
 }

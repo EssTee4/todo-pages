@@ -1,7 +1,9 @@
-export const onRequestGet = async () => {
-  return new Response("Logged out", {
+export const onRequestPost = async ({ env, request }) => {
+  return new Response(JSON.stringify({ success: true }), {
     headers: {
-      "Set-Cookie": "session=; Path=/; HttpOnly; Max-Age=0; Secure; SameSite=Lax"
-    }
+      "Content-Type": "application/json",
+      "Set-Cookie":
+        "session=deleted; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax",
+    },
   });
 };

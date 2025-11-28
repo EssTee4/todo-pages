@@ -2,7 +2,25 @@ export const onRequestPost = async ({ request, env }) => {
   const db = env.DB;
 
   try {
-    const { username, password } = await request.json();
+    const { username, password, confirm } = await request.json();
+
+    if (!username || !password || !confirm) {
+      return Response.json({ error: "All fields required" }, { status: 400 });
+    }
+
+    if (password.length < 8) {
+      return Response.json(
+        { error: "Password must be at least 8 characters" },
+        { status: 400 }
+      );
+    }
+
+    if (password !== confirm) {
+      return Response.json(
+        { error: "Passwords do not match" },
+        { status: 400 }
+      );
+    }
 
     const exists = await db
       .prepare("SELECT id FROM users WHERE username = ?")
@@ -10,10 +28,10 @@ export const onRequestPost = async ({ request, env }) => {
       .first();
 
     if (exists) {
-      return new Response(JSON.stringify({ error: "User exists" }), {
-        status: 400,
-        headers: { "Content-Type": "application/json" }
-      });
+      return Response.json(
+        { error: "Username already exists" },
+        { status: 409 }
+      );
     }
 
     await db
@@ -21,14 +39,8 @@ export const onRequestPost = async ({ request, env }) => {
       .bind(username, password)
       .run();
 
-    return new Response(JSON.stringify({ success: true }), {
-      headers: { "Content-Type": "application/json" }
-    });
-
+    return Response.json({ success: true });
   } catch (e) {
-    return new Response(JSON.stringify({ error: "Register error" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return Response.json({ error: "Registration failed" }, { status: 500 });
   }
 };

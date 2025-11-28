@@ -1,30 +1,42 @@
 document.getElementById("registerBtn").addEventListener("click", registerUser);
 
-function togglePassword() {
-  const p = document.getElementById("password");
-  p.type = p.type === "password" ? "text" : "password";
-}
-document.querySelectorAll(".show-password").forEach(el => el.addEventListener("click", togglePassword));
-
 async function registerUser() {
-  const username = document.getElementById("username").value.trim();
-  const password = document.getElementById("password").value.trim();
-  if (!username || !password) { alert("Both required"); return; }
+  const username = username.value.trim();
+  const password = password.value.trim();
+  const confirm = confirm_password.value.trim();
+
+  if (!username || !password || !confirm) {
+    return showPopup("Fill all fields", "error");
+  }
+
+  if (password.length < 8) {
+    return showPopup("Password must be at least 8 characters", "error");
+  }
+
+  if (password !== confirm) {
+    return showPopup("Passwords do not match", "error");
+  }
 
   try {
     const res = await fetch("/api/register", {
       method: "POST",
+      body: JSON.stringify({ username, password, confirm }),
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password })
     });
+
     const data = await res.json();
-    if (data.success) {
-      window.location.href = "login.html";
-    } else {
-      alert(data.error || "Registration failed");
+
+    if (!res.ok) {
+      showPopup(data.error, "error");
+      return;
     }
+
+    showPopup("Registration successful!", "success");
+
+    setTimeout(() => {
+      window.location.href = "/login.html";
+    }, 700);
   } catch (err) {
-    console.error("register error", err);
-    alert("Network error");
+    showPopup("Network error", "error");
   }
 }

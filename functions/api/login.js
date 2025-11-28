@@ -7,18 +7,24 @@ export const onRequestPost = async ({ request, env }) => {
     const { username, password } = await request.json();
 
     const user = await db
-      .prepare("SELECT * FROM users WHERE username = ? AND password = ?")
-      .bind(username, password)
+      .prepare("SELECT id, password FROM users WHERE username = ?")
+      .bind(username)
       .first();
 
     if (!user) {
-      return new Response(JSON.stringify({ error: "Invalid credentials" }), {
-        status: 401,
-        headers: { "Content-Type": "application/json" }
-      });
+      return Response.json(
+        { error: "Invalid username or password" },
+        { status: 401 }
+      );
     }
 
-    // create new session token
+    if (user.password !== password) {
+      return Response.json(
+        { error: "Invalid username or password" },
+        { status: 401 }
+      );
+    }
+
     const token = uuid();
 
     await db
@@ -26,19 +32,14 @@ export const onRequestPost = async ({ request, env }) => {
       .bind(token, user.id)
       .run();
 
-    return new Response(JSON.stringify({ success: true, user_id: user.id }), {
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        "Set-Cookie":
-          `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`
-      }
+        "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
+      },
     });
-
   } catch (e) {
-    return new Response(JSON.stringify({ error: "Login failed" }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    return Response.json({ error: "Login failed" }, { status: 500 });
   }
 };
