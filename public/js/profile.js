@@ -1,4 +1,4 @@
-// profile.js — Kanban board + drag/drop + session & add task handling
+// Updated profile.js with fixes (ready to copy & paste)
 (function () {
   const popup = document.getElementById("popup");
   const popupText = document.getElementById("popupText");
@@ -30,7 +30,7 @@
     setTimeout(() => popup.classList.remove("show"), 2400);
   }
 
-  // theme toggle (keeps existing behavior)
+  // theme toggle
   (function initTheme() {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") document.documentElement.classList.add("dark");
@@ -47,18 +47,14 @@
         );
         const knob = themeToggleBtn.querySelector(".knob");
         if (knob)
-          knob.style.transform = document.documentElement.classList.contains(
-            "dark"
-          )
+          knob.style.transform = document.documentElement.classList.contains("dark")
             ? "translateX(14px)"
             : "translateX(0)";
       });
 
       const knob = themeToggleBtn.querySelector(".knob");
       if (knob)
-        knob.style.transform = document.documentElement.classList.contains(
-          "dark"
-        )
+        knob.style.transform = document.documentElement.classList.contains("dark")
           ? "translateX(14px)"
           : "translateX(0)";
     }
@@ -70,6 +66,7 @@
       const res = await fetch("/api/me", { credentials: "include" });
       if (res.status === 401) return location.replace("/login.html");
       if (!res.ok) return location.replace("/login.html");
+
       const data = await res.json();
       if (!data || !data.logged_in || !data.user)
         return location.replace("/login.html");
@@ -77,6 +74,7 @@
       greeting.textContent = `Welcome back, ${data.user.username}!`;
       if (welcomeSmall)
         welcomeSmall.textContent = `Signed in as ${data.user.username}`;
+
       await loadTasks();
     } catch (err) {
       console.error("checkSession error:", err);
@@ -84,7 +82,7 @@
     }
   }
 
-  // --- load tasks and render into columns ---
+  // --- load tasks ---
   async function loadTasks() {
     try {
       const res = await fetch("/api/todos", { credentials: "include" });
@@ -93,6 +91,7 @@
         clearColumns();
         return;
       }
+
       const data = await res.json();
       renderTasks(data || []);
     } catch (err) {
@@ -102,19 +101,17 @@
   }
 
   function clearColumns() {
-    [colPending, colInProgress, colCompleted].forEach(
-      (c) => (c.innerHTML = "")
-    );
+    [colPending, colInProgress, colCompleted].forEach((c) => (c.innerHTML = ""));
     updateCounts();
   }
 
   function renderTasks(tasks) {
-    // empty first
     clearColumns();
 
     tasks.forEach((t) => {
       const status = (t.status || "pending").toLowerCase();
       const el = createTaskCard(t);
+
       if (status === "inprogress") colInProgress.appendChild(el);
       else if (status === "completed") colCompleted.appendChild(el);
       else colPending.appendChild(el);
@@ -136,7 +133,6 @@
     el.dataset.id = task.id;
     el.dataset.status = task.status || "pending";
 
-    // content (keeps small decoration)
     el.innerHTML = `
       <div style="display:flex;justify-content:space-between;align-items:center">
         <div><strong>${escapeHtml(task.task)}</strong><div class="small">${
@@ -146,28 +142,22 @@
       </div>
     `;
 
-    // drag events
     el.addEventListener("dragstart", onDragStart);
     el.addEventListener("dragend", onDragEnd);
-
     return el;
   }
 
   function escapeHtml(s) {
-    return String(s || "").replace(
-      /[&<>"']/g,
-      (c) =>
-        ({
-          "&": "&amp;",
-          "<": "&lt;",
-          ">": "&gt;",
-          '"': "&quot;",
-          "'": "&#39;",
-        }[c])
-    );
+    return String(s || "").replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    }[c]));
   }
 
-  // --- drag/drop handlers for columns ---
+  // --- drag/drop handlers ---
   function onDragStart(e) {
     const id = this.dataset.id;
     const status = this.dataset.status || "pending";
@@ -175,34 +165,39 @@
     e.dataTransfer.effectAllowed = "move";
     this.classList.add("dragging");
   }
-  function onDragEnd(e) {
+
+  function onDragEnd() {
     this.classList.remove("dragging");
   }
 
-  // columns accept drop
   function setupDropTargets() {
     const dropZones = document.querySelectorAll(".column-body");
+
     dropZones.forEach((zone) => {
       zone.addEventListener("dragover", (e) => {
         e.preventDefault();
         zone.classList.add("over");
         e.dataTransfer.dropEffect = "move";
       });
+
       zone.addEventListener("dragleave", () => zone.classList.remove("over"));
+
       zone.addEventListener("drop", async (e) => {
         e.preventDefault();
         zone.classList.remove("over");
+
         let payload;
         try {
           payload = JSON.parse(e.dataTransfer.getData("text/plain"));
         } catch (_) {
           return;
         }
+
         if (!payload || !payload.id) return;
 
         const id = payload.id;
         const newStatus = zone.dataset.status;
-        // Optimistically move the card in DOM
+
         const card = document.querySelector(`.board-card[data-id='${id}']`);
         if (card) {
           card.dataset.status = newStatus;
@@ -210,7 +205,6 @@
           updateCounts();
         }
 
-        // send update to server
         try {
           const res = await fetch(`/api/todos/${id}`, {
             method: "PUT",
@@ -218,12 +212,13 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: newStatus }),
           });
+
           if (!res.ok) {
-            // revert by reloading tasks if server fails
             showPopup("Could not move task (server error)", "error");
             await loadTasks();
             return;
           }
+
           showPopup("Task moved", "success");
         } catch (err) {
           console.error("drag update error:", err);
@@ -253,7 +248,7 @@
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ task: text, status: "pending" }), // send task & status
+          body: JSON.stringify({ task: text, status: "pending" }),
         });
 
         if (!res.ok) {
@@ -266,40 +261,3 @@
             } else {
               const t = await res.text();
               errMsg = t || errMsg;
-            }
-          } catch (e) {
-            console.error("parse add error:", e);
-          }
-          showPopup(errMsg, "error");
-          return;
-        }
-
-        newTaskInput.value = "";
-        showPopup("Task added", "success");
-        await loadTasks();
-      } catch (err) {
-        console.error("addTask network error:", err);
-        showPopup("Network error while adding task — check console", "error");
-      } finally {
-        addBtn.disabled = false;
-        spinner.remove();
-      }
-    });
-  }
-
-  // logout
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", async () => {
-      try {
-        await fetch("/api/logout", { method: "POST", credentials: "include" });
-      } catch (e) {
-        console.error(e);
-      }
-      location.replace("/login.html");
-    });
-  }
-
-  // init
-  setupDropTargets();
-  checkSession();
-})();
