@@ -6,6 +6,7 @@
     <title>Register — Todo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
+
   <body class="fade-in">
     <div class="app">
       <header class="header">
@@ -17,14 +18,12 @@
           </div>
         </div>
 
-        <!-- ⭐ NEW aesthetic switch -->
+        <!-- ⭐ NEW aesthetic dark-mode switch -->
         <div class="row">
-          <div id="themeToggle" class="theme-switch">
-            <div class="switch-track">
-              <div class="switch-thumb"></div>
-            </div>
-            <span class="switch-label">Dark mode</span>
-          </div>
+          <label class="switch" title="Toggle dark mode">
+            <input type="checkbox" id="darkSwitch" />
+            <span class="slider"></span>
+          </label>
 
           <a
             href="login.html"
@@ -34,8 +33,9 @@
               border: 1px solid rgba(0, 0, 0, 0.06);
               color: var(--text);
             "
-            >Login</a
           >
+            Login
+          </a>
         </div>
       </header>
 
@@ -51,6 +51,7 @@
             autocomplete="username"
           />
           <div style="height: 10px"></div>
+
           <input
             id="password"
             type="password"
@@ -59,6 +60,7 @@
             autocomplete="new-password"
           />
           <div style="height: 10px"></div>
+
           <input
             id="confirm_password"
             type="password"
@@ -67,12 +69,14 @@
             autocomplete="new-password"
           />
           <div style="height: 12px"></div>
+
           <button id="registerBtn" class="btn" type="submit">
             Create account
           </button>
         </form>
       </main>
 
+      <!-- Popup -->
       <div id="popup" class="popup" role="status" aria-live="polite">
         <div class="dot"></div>
         <div id="popupText"></div>
