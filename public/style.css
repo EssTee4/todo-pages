@@ -4,6 +4,7 @@
   --text: #0b1724;
   --muted: #6b7280;
   --primary: #007aff;
+  --accent: #7c5cff;
   --success: #16a34a;
   --error: #ef4444;
   --glass: rgba(255, 255, 255, 0.6);
@@ -11,14 +12,16 @@
   --shadow-lg: 0 20px 40px rgba(2, 6, 23, 0.08);
   --transition: 300ms cubic-bezier(0.2, 0.9, 0.3, 1);
 }
+
 :root.dark {
-  --bg: linear-gradient(180deg, #07111b, #0d1b2a);
-  --card: rgba(255, 255, 255, 0.03);
+  --bg: linear-gradient(180deg, #07111b, #081428);
+  --card: rgba(255, 255, 255, 0.02);
   --text: #e6eef8;
   --muted: #9aa8bd;
-  --primary: #5aa8ff;
+  --primary: #3aa0ff;
+  --accent: #b27cff;
   --glass: rgba(255, 255, 255, 0.02);
-  --shadow-lg: 0 20px 40px rgba(2, 6, 23, 0.6);
+  --shadow-lg: 0 24px 50px rgba(2, 6, 23, 0.6);
 }
 
 /* Base */
@@ -37,9 +40,10 @@ body {
   color: var(--text);
   -webkit-font-smoothing: antialiased;
   transition: background var(--transition), color var(--transition);
+  -webkit-tap-highlight-color: transparent;
 }
 
-/* container */
+/* app layout */
 .app {
   max-width: 980px;
   margin: 48px auto;
@@ -63,7 +67,7 @@ body {
   width: 52px;
   height: 52px;
   border-radius: 12px;
-  background: linear-gradient(135deg, var(--primary), #7c5cff);
+  background: linear-gradient(135deg, var(--primary), var(--accent));
   color: white;
   display: flex;
   align-items: center;
@@ -81,7 +85,45 @@ body {
   font-size: 13px;
 }
 
-/* cards */
+/* toggle button (vibrant) */
+.theme-toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.45)
+  );
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease,
+    background var(--transition);
+}
+:root.dark .theme-toggle {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.theme-toggle .knob {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #fff, #f3f6ff);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+:root.dark .theme-toggle .knob {
+  background: linear-gradient(180deg, #0f1724, #0b1220);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* card */
 .card {
   background: var(--card);
   border-radius: var(--radius);
@@ -93,7 +135,7 @@ body {
   transform: translateY(-6px);
 }
 
-/* center form */
+/* center */
 .center {
   max-width: 520px;
   margin: 28px auto;
@@ -144,6 +186,22 @@ body {
 }
 .btn:hover {
   transform: translateY(-4px);
+}
+
+/* pulse for add */
+.spinner {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(255, 255, 255, 0.9);
+  animation: spin 800ms linear infinite;
+  margin-left: 8px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* popup */
@@ -221,17 +279,7 @@ body {
   transform: translateY(-8px);
 }
 
-/* utility */
-.row {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-.centered {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* fade */
 .fade-in {
   animation: fadeIn 0.45s ease both;
 }
