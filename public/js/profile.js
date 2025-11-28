@@ -1,5 +1,4 @@
-// Profile page: checks session via /api/me, greets user, shows simple tasks UI.
-// You likely have a /api/todos already; this uses a minimal UI to show tasks if present.
+// Profile page: checks session via /api/me, greets user, shows tasks UI.
 (function () {
   const popup = document.getElementById("popup");
   const popupText = document.getElementById("popupText");
@@ -11,6 +10,9 @@
   const logoutBtn = document.getElementById("logoutBtn");
   const themeButtons = document.querySelectorAll("#themeToggle");
 
+  // ---------------------------------------
+  // POPUP
+  // ---------------------------------------
   function showPopup(msg, type = "success") {
     popupText.textContent = msg;
     popup.className = `popup ${type} show`;
@@ -19,7 +21,9 @@
     setTimeout(() => popup.classList.remove("show"), 2600);
   }
 
-  // theme init
+  // ---------------------------------------
+  // DARK MODE INIT
+  // ---------------------------------------
   (function () {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") document.documentElement.classList.add("dark");
@@ -34,57 +38,77 @@
     );
   })();
 
+  // ---------------------------------------
+  // SESSION CHECK - FIXED
+  // ---------------------------------------
   async function checkSession() {
     try {
       const res = await fetch("/api/me", { credentials: "include" });
-      if (!res.ok) {
+
+      if (res.status === 401) {
         location.href = "/login.html";
         return;
       }
+
       const data = await res.json();
-      greeting.textContent = `Welcome back, ${data.user.username}!`;
-      welcomeSmall.textContent = `Signed in as ${data.user.username}`;
-      // load tasks if endpoint exists
+
+      // FIXED: /api/me returns { logged_in: true, username: "xxx" }
+      if (!data.logged_in) {
+        location.href = "/login.html";
+        return;
+      }
+
+      greeting.textContent = `Welcome back, ${data.username}!`;
+      welcomeSmall.textContent = `Signed in as ${data.username}`;
+
+      // Load tasks
       loadTasks();
     } catch (e) {
-      console.error(e);
+      console.error("SESSION ERR:", e);
       location.href = "/login.html";
     }
   }
 
+  // ---------------------------------------
+  // LOAD TASKS
+  // ---------------------------------------
   async function loadTasks() {
     try {
       const res = await fetch("/api/todos", { credentials: "include" });
-      if (!res.ok) {
-        // If /api/todos doesn't exist or returns HTML redirect to login, handle gracefully
-        if (
-          res.headers &&
-          res.headers.get &&
-          res.headers.get("content-type") &&
-          res.headers.get("content-type").includes("text/html")
-        ) {
-          location.href = "/login.html";
-          return;
-        }
-        // no tasks endpoint: just show empty state
-        taskList.innerHTML = `<div class="small">No tasks to display.</div>`;
+
+      if (res.status === 401) {
+        location.href = "/login.html";
         return;
       }
+
+      if (!res.ok) {
+        taskList.innerHTML = `<div class="small">Could not load tasks.</div>`;
+        return;
+      }
+
       const data = await res.json();
+
       taskList.innerHTML = "";
+
       if (!Array.isArray(data) || data.length === 0) {
         taskList.innerHTML = `<div class="small">No tasks yet — add one above.</div>`;
         return;
       }
+
       data.forEach((t) => {
         const el = document.createElement("div");
-        el.className = "task-card";
-        el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center">
-          <div><strong>${escapeHtml(
-            t.title || t.task || "Untitled"
-          )}</strong><div class="small">${t.due || ""}</div></div>
-          <div class="small">✱</div>
-        </div>`;
+        el.className = "task-card fade-in";
+
+        el.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>${escapeHtml(t.title || "Untitled")}</strong>
+              <div class="small">${t.due || ""}</div>
+            </div>
+            <div class="small">✱</div>
+          </div>
+        `;
+
         taskList.appendChild(el);
       });
     } catch (err) {
@@ -93,6 +117,9 @@
     }
   }
 
+  // ---------------------------------------
+  // ESCAPE HTML
+  // ---------------------------------------
   function escapeHtml(s) {
     return String(s).replace(
       /[&<>"']/g,
@@ -107,12 +134,16 @@
     );
   }
 
+  // ---------------------------------------
+  // ADD TASK
+  // ---------------------------------------
   addBtn.addEventListener("click", async () => {
     const text = newTaskInput.value.trim();
     if (!text) {
       showPopup("Enter a task", "error");
       return;
     }
+
     try {
       const res = await fetch("/api/todos", {
         method: "POST",
@@ -120,11 +151,13 @@
         body: JSON.stringify({ title: text }),
         credentials: "include",
       });
+
       if (!res.ok) {
         const d = await res.json();
-        showPopup(d.error || "Failed to add", "error");
+        showPopup(d.error || "Failed to add task", "error");
         return;
       }
+
       newTaskInput.value = "";
       showPopup("Task added", "success");
       loadTasks();
@@ -134,14 +167,19 @@
     }
   });
 
+  // ---------------------------------------
+  // LOGOUT
+  // ---------------------------------------
   logoutBtn.addEventListener("click", async () => {
     try {
       await fetch("/api/logout", { method: "POST", credentials: "include" });
     } finally {
-      // ensure redirect
       location.href = "/login.html";
     }
   });
 
+  // ---------------------------------------
+  // START
+  // ---------------------------------------
   checkSession();
 })();
