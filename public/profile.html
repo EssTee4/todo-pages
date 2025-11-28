@@ -5,8 +5,69 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Profile — Todo</title>
     <link rel="stylesheet" href="style.css" />
-  </head>
+    <style>
+      /* minimal switch CSS (keeps styling in your style.css but ensures switch works) */
+      .switch {
+        position: relative;
+        width: 56px;
+        height: 30px;
+        cursor: pointer;
+        display: inline-block;
+      }
+      .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .slider {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.12);
+        border-radius: 30px;
+        transition: 0.35s ease;
+        backdrop-filter: blur(6px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18) inset;
+      }
+      .slider:before {
+        content: "";
+        position: absolute;
+        height: 24px;
+        width: 24px;
+        left: 3px;
+        bottom: 3px;
+        background: white;
+        border-radius: 50%;
+        transition: 0.35s ease;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+      }
+      /* glowing gradient when ON */
+      input:checked + .slider {
+        background: linear-gradient(135deg, var(--primary), var(--accent));
+        box-shadow: 0 0 10px rgba(113, 89, 193, 0.55);
+      }
+      input:checked + .slider:before {
+        transform: translateX(26px);
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(255, 255, 255, 0.4);
+      }
 
+      /* Delete selected button placeholder styles (will be inserted by JS) */
+      #deleteSelectedBtn {
+        margin-left: 10px;
+        background: transparent;
+        border: 1px solid rgba(239, 68, 68, 0.14);
+        color: var(--error);
+        padding: 8px 12px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 160ms ease, box-shadow 160ms ease;
+      }
+      #deleteSelectedBtn:hover {
+        transform: translateY(-3px);
+      }
+    </style>
+  </head>
   <body class="fade-in">
     <div class="app">
       <header class="header">
@@ -17,14 +78,14 @@
             <div class="small" id="welcomeSmall">Welcome!</div>
           </div>
         </div>
-
         <div style="display: flex; gap: 10px; align-items: center">
-          <!-- 🔥 BEAUTIFUL DARK MODE SWITCH -->
+          <!-- BEAUTIFUL DARK MODE SWITCH -->
           <label class="switch" title="Toggle dark mode">
             <input type="checkbox" id="darkSwitch" />
             <span class="slider"></span>
           </label>
 
+          <!-- Delete selected will be inserted here by JS when needed -->
           <button
             id="logoutBtn"
             class="btn"

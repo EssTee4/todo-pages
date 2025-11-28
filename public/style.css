@@ -446,3 +446,60 @@ input:checked + .slider:before {
   background: #fff;
   box-shadow: 0 4px 14px rgba(255, 255, 255, 0.4);
 }
+
+html.theme-transition,
+html.theme-transition body,
+html.theme-transition :root {
+  transition: background 450ms ease, color 450ms ease, box-shadow 450ms ease;
+}
+
+/* Selected card visual */
+.board-card.selected {
+  outline: 3px solid rgba(62, 131, 255, 0.18);
+  transform: translateY(-4px) scale(1.01);
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.92),
+    rgba(255, 255, 255, 0.88)
+  );
+}
+
+/* Dark-mode selected variant */
+:root.dark .board-card.selected {
+  outline: 3px solid rgba(58, 160, 255, 0.12);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+}
+
+/* Make sure board columns and cards animate smoothly */
+.column-body,
+.task-card,
+.board-card {
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    box-shadow 260ms ease, background 260ms ease;
+}
+
+/* Slightly softer 'over' effect */
+.column-body.over {
+  outline: 2px dashed rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.06),
+    rgba(255, 255, 255, 0.03)
+  );
+}
+
+/* DeleteSelected button handled inline (JS inserts it). If you want, override more styling here: */
+#deleteSelectedBtn {
+  background: transparent;
+  border: 1px solid rgba(239, 68, 68, 0.08);
+  color: var(--error);
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+}
