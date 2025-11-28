@@ -1,31 +1,55 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>My Profile</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile — Todo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <div class="profile-header">
-      <h2 id="welcome">Welcome!</h2>
-      <button id="logoutBtn" class="logout-btn">Logout</button>
+  <body class="fade-in">
+    <div class="app-shell">
+      <div class="header card">
+        <div class="brand">
+          <div class="logo">TD</div>
+          <div>
+            <div class="title">Your Tasks</div>
+            <div class="small" id="welcomeSmall">Welcome!</div>
+          </div>
+        </div>
+
+        <div class="controls">
+          <button id="themeToggle" class="btn ghost small">Toggle Theme</button>
+          <button id="logoutBtn" class="btn secondary">Logout</button>
+        </div>
+      </div>
+
+      <div class="card" id="contentArea">
+        <div class="space-between">
+          <div>
+            <h3 id="greeting">Welcome back!</h3>
+            <div class="small" id="subtext">Here are your tasks</div>
+          </div>
+          <div class="centered">
+            <input
+              id="newTaskInput"
+              class="input"
+              placeholder="Add a task..."
+              style="max-width: 260px"
+            />
+            <button class="btn" id="addTaskBtn" style="margin-left: 8px">
+              Add
+            </button>
+          </div>
+        </div>
+
+        <div class="tasks-grid" id="taskList" style="margin-top: 18px"></div>
+      </div>
+
+      <div id="popup" class="popup" aria-live="polite" role="status">
+        <div class="dot"></div>
+        <div id="popupText"></div>
+      </div>
     </div>
-
-    <div style="padding: 25px">
-      <h3>Your Tasks</h3>
-
-      <div id="task-list" style="margin-top: 20px"></div>
-    </div>
-
-    <div id="popup" class="popup"></div>
-
-    <script>
-      function showPopup(msg, type = "success") {
-        const el = document.getElementById("popup");
-        el.textContent = msg;
-        el.className = `popup ${type} show`;
-        setTimeout(() => el.classList.remove("show"), 2500);
-      }
-    </script>
 
     <script src="js/profile.js"></script>
   </body>

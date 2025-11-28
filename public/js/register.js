@@ -1,42 +1,69 @@
-document.getElementById("registerBtn").addEventListener("click", registerUser);
+// Register with confirm password & min length
+(function () {
+  const form = document.getElementById("registerForm");
+  const popup = document.getElementById("popup");
+  const popupText = document.getElementById("popupText");
+  const themeToggle = document.querySelectorAll("#themeToggle");
 
-async function registerUser() {
-  const username = username.value.trim();
-  const password = password.value.trim();
-  const confirm = confirm_password.value.trim();
-
-  if (!username || !password || !confirm) {
-    return showPopup("Fill all fields", "error");
+  function showPopup(msg, type = "success") {
+    popupText.textContent = msg;
+    popup.className = `popup ${type} show`;
+    popup.querySelector(".dot").style.background =
+      type === "success" ? "var(--success)" : "var(--error)";
+    setTimeout(() => popup.classList.remove("show"), 2600);
   }
 
-  if (password.length < 8) {
-    return showPopup("Password must be at least 8 characters", "error");
-  }
+  // theme initialization
+  (function () {
+    const saved = localStorage.getItem("theme");
+    if (saved === "dark") document.documentElement.classList.add("dark");
+    themeToggle.forEach((b) =>
+      b.addEventListener("click", () => {
+        document.documentElement.classList.toggle("dark");
+        localStorage.setItem(
+          "theme",
+          document.documentElement.classList.contains("dark") ? "dark" : "light"
+        );
+      })
+    );
+  })();
 
-  if (password !== confirm) {
-    return showPopup("Passwords do not match", "error");
-  }
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value;
+    const confirm = document.getElementById("confirm_password").value;
 
-  try {
-    const res = await fetch("/api/register", {
-      method: "POST",
-      body: JSON.stringify({ username, password, confirm }),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      showPopup(data.error, "error");
+    if (!username || !password || !confirm) {
+      showPopup("Please fill all fields", "error");
+      return;
+    }
+    if (password.length < 8) {
+      showPopup("Password must be at least 8 characters", "error");
+      return;
+    }
+    if (password !== confirm) {
+      showPopup("Passwords do not match", "error");
       return;
     }
 
-    showPopup("Registration successful!", "success");
-
-    setTimeout(() => {
-      window.location.href = "/login.html";
-    }, 700);
-  } catch (err) {
-    showPopup("Network error", "error");
-  }
-}
+    try {
+      const res = await fetch("/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password, confirm }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showPopup(data.error || "Registration failed", "error");
+        return;
+      }
+      showPopup("Account created", "success");
+      setTimeout(() => (location.href = "/login.html"), 700);
+    } catch (err) {
+      console.error(err);
+      showPopup("Network error", "error");
+    }
+  });
+})();

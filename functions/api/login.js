@@ -1,8 +1,16 @@
 export const onRequestPost = async ({ request, env }) => {
-  const db = env.DB;
-
   try {
-    const { username, password } = await request.json();
+    const db = env.DB;
+    const body = await request.json();
+    const username = (body.username || "").trim();
+    const password = body.password || "";
+
+    if (!username || !password) {
+      return new Response(
+        JSON.stringify({ error: "Missing username or password" }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     const user = await db
       .prepare("SELECT id, password FROM users WHERE username = ?")
@@ -10,13 +18,12 @@ export const onRequestPost = async ({ request, env }) => {
       .first();
 
     if (!user || user.password !== password) {
-      return Response.json(
-        { error: "Invalid username or password" },
-        { status: 401 }
+      return new Response(
+        JSON.stringify({ error: "Invalid username or password" }),
+        { status: 401, headers: { "Content-Type": "application/json" } }
       );
     }
 
-    // ✔ Cloudflare-native UUID (no import required)
     const token = crypto.randomUUID();
 
     await db
@@ -28,10 +35,15 @@ export const onRequestPost = async ({ request, env }) => {
       status: 200,
       headers: {
         "Content-Type": "application/json",
+        // cookie — HttpOnly so JS can't read it. Secure is fine on Cloudflare Pages (HTTPS).
         "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
       },
     });
-  } catch (e) {
-    return Response.json({ error: "Login failed" }, { status: 500 });
+  } catch (err) {
+    console.error("login error", err);
+    return new Response(JSON.stringify({ error: "Login failed" }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 };

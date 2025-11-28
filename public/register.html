@@ -1,42 +1,65 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Register</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Register — Todo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <div class="center-box">
-      <h1>Create Account</h1>
+  <body class="fade-in">
+    <div class="app-shell">
+      <div class="header card">
+        <div class="brand">
+          <div class="logo">TD</div>
+          <div>
+            <div class="title">Create account</div>
+            <div class="small">Join and start organizing</div>
+          </div>
+        </div>
 
-      <input id="username" placeholder="Username" />
-      <input
-        id="password"
-        type="password"
-        placeholder="Password (min 8 chars)"
-      />
-      <input
-        id="confirm_password"
-        type="password"
-        placeholder="Confirm Password"
-      />
+        <div class="controls">
+          <button id="themeToggle" class="btn ghost small">Toggle Theme</button>
+          <a class="btn ghost" href="login.html">Login</a>
+        </div>
+      </div>
 
-      <button id="registerBtn">Register</button>
+      <div class="center card">
+        <h2>Create account</h2>
+        <p class="small">Minimum 8 characters password</p>
 
-      <p style="margin-top: 15px">
-        Already have an account? <a href="login.html">Login</a>
-      </p>
+        <form id="registerForm" style="margin-top: 12px">
+          <input
+            id="username"
+            class="input"
+            placeholder="Username"
+            autocomplete="username"
+          />
+          <input
+            id="password"
+            type="password"
+            class="input"
+            placeholder="Password (min 8 chars)"
+            autocomplete="new-password"
+          />
+          <input
+            id="confirm_password"
+            type="password"
+            class="input"
+            placeholder="Confirm password"
+            autocomplete="new-password"
+          />
+          <div style="height: 8px"></div>
+          <button class="btn" id="registerBtn" type="submit">
+            Create account
+          </button>
+        </form>
+      </div>
+
+      <div id="popup" class="popup" aria-live="polite" role="status">
+        <div class="dot"></div>
+        <div id="popupText"></div>
+      </div>
     </div>
-
-    <div id="popup" class="popup"></div>
-
-    <script>
-      function showPopup(msg, type = "success") {
-        const el = document.getElementById("popup");
-        el.textContent = msg;
-        el.className = `popup ${type} show`;
-        setTimeout(() => el.classList.remove("show"), 2500);
-      }
-    </script>
 
     <script src="js/register.js"></script>
   </body>

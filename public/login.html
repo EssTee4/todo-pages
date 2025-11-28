@@ -1,33 +1,56 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Login</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — Todo</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
-    <div class="center-box">
-      <h1>Login</h1>
+  <body class="fade-in">
+    <div class="app-shell">
+      <div class="header card">
+        <div class="brand">
+          <div class="logo">TD</div>
+          <div>
+            <div class="title">Todo</div>
+            <div class="small">Organize your day</div>
+          </div>
+        </div>
 
-      <input id="username" placeholder="Username" />
-      <input id="password" type="password" placeholder="Password" />
+        <div class="controls">
+          <button id="themeToggle" class="btn ghost small">Toggle Theme</button>
+          <a class="btn secondary" href="register.html">Register</a>
+        </div>
+      </div>
 
-      <button id="loginBtn">Login</button>
+      <div class="center card">
+        <h2>Welcome back</h2>
+        <p class="small">Log in to continue</p>
 
-      <p style="margin-top: 15px">
-        Don't have an account? <a href="register.html">Register</a>
-      </p>
+        <form id="loginForm" style="margin-top: 12px">
+          <input
+            id="username"
+            class="input"
+            placeholder="Username"
+            autocomplete="username"
+          />
+          <input
+            id="password"
+            type="password"
+            class="input"
+            placeholder="Password"
+            autocomplete="current-password"
+          />
+          <div style="height: 8px"></div>
+          <button class="btn" id="loginBtn" type="submit">Sign in</button>
+        </form>
+      </div>
+
+      <div id="popup" class="popup" aria-live="polite" role="status">
+        <div class="dot"></div>
+        <div id="popupText"></div>
+      </div>
     </div>
-
-    <div id="popup" class="popup"></div>
-
-    <script>
-      function showPopup(msg, type = "success") {
-        const el = document.getElementById("popup");
-        el.textContent = msg;
-        el.className = `popup ${type} show`;
-        setTimeout(() => el.classList.remove("show"), 2500);
-      }
-    </script>
 
     <script src="js/login.js"></script>
   </body>
