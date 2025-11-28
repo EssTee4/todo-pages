@@ -1,5 +1,3 @@
-import { v4 as uuid } from "uuid";
-
 export const onRequestPost = async ({ request, env }) => {
   const db = env.DB;
 
@@ -11,21 +9,15 @@ export const onRequestPost = async ({ request, env }) => {
       .bind(username)
       .first();
 
-    if (!user) {
+    if (!user || user.password !== password) {
       return Response.json(
         { error: "Invalid username or password" },
         { status: 401 }
       );
     }
 
-    if (user.password !== password) {
-      return Response.json(
-        { error: "Invalid username or password" },
-        { status: 401 }
-      );
-    }
-
-    const token = uuid();
+    // ✔ Cloudflare-native UUID (no import required)
+    const token = crypto.randomUUID();
 
     await db
       .prepare("INSERT INTO sessions (token, user_id) VALUES (?, ?)")

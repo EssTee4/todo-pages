@@ -1,52 +1,31 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <title>Dashboard - ToDo App</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>My Profile</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <div id="popup" class="popup"></div>
-  <script>
-    function showPopup(msg, type = "success") {
-      const el = document.getElementById("popup");
-      el.textContent = msg;
-      el.className = `popup ${type} show`;
-      setTimeout(() => {
-        el.classList.remove("show");
-      }, 2500);
-    }
-  </script>
-
   <body>
-    <div class="navbar">
-      <h2>My Tasks</h2>
-      <button class="logout-btn" id="logoutBtn">Logout</button>
+    <div class="profile-header">
+      <h2 id="welcome">Welcome!</h2>
+      <button id="logoutBtn" class="logout-btn">Logout</button>
     </div>
 
-    <div class="add-bar">
-      <input id="taskInput" placeholder="New task..." />
-      <button id="addBtn">Add</button>
+    <div style="padding: 25px">
+      <h3>Your Tasks</h3>
+
+      <div id="task-list" style="margin-top: 20px"></div>
     </div>
 
-    <div class="board">
-      <div class="column" data-status="todo">
-        <h3>To Do</h3>
-        <div class="task-list" id="todo"></div>
-      </div>
+    <div id="popup" class="popup"></div>
 
-      <div class="column" data-status="inProgress">
-        <h3>In Progress</h3>
-        <div class="task-list" id="inProgress"></div>
-      </div>
-
-      <div class="column" data-status="completed">
-        <h3>Completed</h3>
-        <div class="task-list" id="completed"></div>
-      </div>
-    </div>
-
-    <button class="delete-btn" id="deleteSelectedBtn">Delete Selected</button>
+    <script>
+      function showPopup(msg, type = "success") {
+        const el = document.getElementById("popup");
+        el.textContent = msg;
+        el.className = `popup ${type} show`;
+        setTimeout(() => el.classList.remove("show"), 2500);
+      }
+    </script>
 
     <script src="js/profile.js"></script>
   </body>

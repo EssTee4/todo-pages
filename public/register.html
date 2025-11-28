@@ -1,39 +1,42 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
-    <meta charset="utf-8" />
-    <title>Register - ToDo App</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Register</title>
     <link rel="stylesheet" href="style.css" />
   </head>
-  <div id="popup" class="popup"></div>
-  <script>
-    function showPopup(msg, type = "success") {
-      const el = document.getElementById("popup");
-      el.textContent = msg;
-      el.className = `popup ${type} show`;
-      setTimeout(() => {
-        el.classList.remove("show");
-      }, 2500);
-    }
-  </script>
-
   <body>
-    <div class="auth-container">
-      <h2>Create Account</h2>
+    <div class="center-box">
+      <h1>Create Account</h1>
 
-      <input type="text" id="username" placeholder="Username" required />
-      <div class="password-wrapper">
-        <input type="password" id="password" placeholder="Password" required />
-        <span class="show-password" onclick="togglePassword()">👁️</span>
-      </div>
+      <input id="username" placeholder="Username" />
+      <input
+        id="password"
+        type="password"
+        placeholder="Password (min 8 chars)"
+      />
+      <input
+        id="confirm_password"
+        type="password"
+        placeholder="Confirm Password"
+      />
 
-      <button id="registerBtn">Create Account</button>
+      <button id="registerBtn">Register</button>
 
-      <p class="switch-page">
+      <p style="margin-top: 15px">
         Already have an account? <a href="login.html">Login</a>
       </p>
     </div>
+
+    <div id="popup" class="popup"></div>
+
+    <script>
+      function showPopup(msg, type = "success") {
+        const el = document.getElementById("popup");
+        el.textContent = msg;
+        el.className = `popup ${type} show`;
+        setTimeout(() => el.classList.remove("show"), 2500);
+      }
+    </script>
 
     <script src="js/register.js"></script>
   </body>
