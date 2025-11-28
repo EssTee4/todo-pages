@@ -16,7 +16,7 @@
             <div class="small" id="welcomeSmall">Welcome!</div>
           </div>
         </div>
-        <div class="row">
+        <div style="display: flex; gap: 10px; align-items: center">
           <button
             id="themeToggle"
             class="btn"
@@ -28,6 +28,7 @@
           >
             Toggle
           </button>
+
           <button
             id="logoutBtn"
             class="btn"
@@ -44,12 +45,12 @@
 
       <section class="card" id="contentArea">
         <div
-          class="space-between"
           style="
             display: flex;
             justify-content: space-between;
             align-items: center;
             gap: 12px;
+            margin-bottom: 16px;
           "
         >
           <div>
@@ -68,7 +69,44 @@
           </div>
         </div>
 
-        <div class="tasks-grid" id="taskList"></div>
+        <!-- BOARD: three columns -->
+        <div class="board" id="board">
+          <div class="board-column" data-status="pending">
+            <div class="column-header">
+              <div class="column-title">To-Do</div>
+              <div class="column-count" id="count-pending">0</div>
+            </div>
+            <div
+              class="column-body"
+              id="col-pending"
+              data-status="pending"
+            ></div>
+          </div>
+
+          <div class="board-column" data-status="inprogress">
+            <div class="column-header">
+              <div class="column-title">In Progress</div>
+              <div class="column-count" id="count-inprogress">0</div>
+            </div>
+            <div
+              class="column-body"
+              id="col-inprogress"
+              data-status="inprogress"
+            ></div>
+          </div>
+
+          <div class="board-column" data-status="completed">
+            <div class="column-header">
+              <div class="column-title">Completed</div>
+              <div class="column-count" id="count-completed">0</div>
+            </div>
+            <div
+              class="column-body"
+              id="col-completed"
+              data-status="completed"
+            ></div>
+          </div>
+        </div>
       </section>
 
       <div id="popup" class="popup" role="status" aria-live="polite">
