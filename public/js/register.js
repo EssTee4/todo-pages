@@ -13,10 +13,14 @@
     setTimeout(() => popup.classList.remove("show"), 2600);
   }
 
+  /* -------------------------
+     THEME SWITCH LOGIC
+  --------------------------*/
   (function () {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") document.documentElement.classList.add("dark");
-    if (themeToggle)
+
+    if (themeToggle) {
       themeToggle.addEventListener("click", () => {
         document.documentElement.classList.toggle("dark");
         localStorage.setItem(
@@ -24,8 +28,12 @@
           document.documentElement.classList.contains("dark") ? "dark" : "light"
         );
       });
+    }
   })();
 
+  /* -------------------------
+     FORM SUBMIT
+  --------------------------*/
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const username = document.getElementById("username").value.trim();
