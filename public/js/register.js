@@ -1,10 +1,11 @@
-// register.js
 (function () {
   const form = document.getElementById("registerForm");
   const popup = document.getElementById("popup");
   const popupText = document.getElementById("popupText");
-  const themeToggle = document.getElementById("themeToggle");
 
+  /* -------------------------
+     POPUP FUNCTION
+  --------------------------*/
   function showPopup(msg, type = "success") {
     popupText.textContent = msg;
     popup.className = `popup ${type} show`;
@@ -14,28 +15,31 @@
   }
 
   /* -------------------------
-     THEME SWITCH LOGIC
+     DARK MODE SWITCH
   --------------------------*/
-  (function () {
-    const saved = localStorage.getItem("theme");
-    if (saved === "dark") document.documentElement.classList.add("dark");
+  const darkSwitch = document.getElementById("darkSwitch");
 
-    if (themeToggle) {
-      themeToggle.addEventListener("click", () => {
-        document.documentElement.classList.toggle("dark");
-        localStorage.setItem(
-          "theme",
-          document.documentElement.classList.contains("dark") ? "dark" : "light"
-        );
-      });
-    }
-  })();
+  // Load stored theme
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme === "dark") {
+    document.documentElement.classList.add("dark");
+    if (darkSwitch) darkSwitch.checked = true;
+  }
+
+  if (darkSwitch) {
+    darkSwitch.addEventListener("change", () => {
+      const enable = darkSwitch.checked;
+      document.documentElement.classList.toggle("dark", enable);
+      localStorage.setItem("theme", enable ? "dark" : "light");
+    });
+  }
 
   /* -------------------------
-     FORM SUBMIT
+     REGISTER SUBMIT
   --------------------------*/
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const username = document.getElementById("username").value.trim();
     const password = document.getElementById("password").value;
     const confirm = document.getElementById("confirm_password").value;
@@ -57,16 +61,18 @@
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password, confirm }),
+        body: JSON.stringify({ username, password }),
         credentials: "include",
       });
+
       const body = await res.json();
+
       if (!res.ok) {
         showPopup(body.error || "Registration failed", "error");
         return;
       }
 
-      showPopup("Account created", "success");
+      showPopup("Account created!", "success");
       setTimeout(() => location.replace("/login.html"), 700);
     } catch (err) {
       console.error(err);
