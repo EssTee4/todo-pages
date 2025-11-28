@@ -1,4 +1,4 @@
-import { getUserFromSession } from "../_utils";
+import { getUserFromSession } from "./_utils.js";
 
 export async function onRequest({ request, env }) {
   const url = new URL(request.url);
