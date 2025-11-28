@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Profile — Todo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="fade-in">
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <div class="logo">TD</div>
+          <div>
+            <div class="title">Your Tasks</div>
+            <div class="small" id="welcomeSmall">Welcome!</div>
+          </div>
+        </div>
+        <div class="row">
+          <button
+            id="themeToggle"
+            class="btn"
+            style="
+              background: transparent;
+              color: var(--text);
+              border: 1px solid rgba(0, 0, 0, 0.06);
+            "
+          >
+            Toggle
+          </button>
+          <button
+            id="logoutBtn"
+            class="btn"
+            style="
+              background: transparent;
+              border: 1px solid rgba(0, 0, 0, 0.06);
+              color: var(--text);
+            "
+          >
+            Logout
+          </button>
+        </div>
+      </header>
+
+      <section class="card" id="contentArea">
+        <div
+          class="space-between"
+          style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+          "
+        >
+          <div>
+            <h3 id="greeting">Welcome back!</h3>
+            <div class="small" id="subtext">Here are your tasks</div>
+          </div>
+
+          <div style="display: flex; gap: 8px; align-items: center">
+            <input
+              id="newTaskInput"
+              class="input"
+              placeholder="Add a task..."
+              style="max-width: 260px"
+            />
+            <button id="addTaskBtn" class="btn">Add</button>
+          </div>
+        </div>
+
+        <div class="tasks-grid" id="taskList"></div>
+      </section>
+
+      <div id="popup" class="popup" role="status" aria-live="polite">
+        <div class="dot"></div>
+        <div id="popupText"></div>
+      </div>
+    </div>
+
+    <script src="js/profile.js"></script>
+  </body>
+</html>

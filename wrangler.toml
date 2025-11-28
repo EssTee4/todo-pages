@@ -1,0 +1,11 @@
+# Cloudflare Pages configuration (correct format)
+
+name = "todo-pages"
+compatibility_date = "2025-11-27"
+
+pages_build_output_dir = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "todo_db"
+database_id = "c2e84f6d-8403-4cd0-a99a-8e5dddd7f882"

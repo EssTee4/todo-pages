@@ -1,0 +1,308 @@
+:root {
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --text: #0b1724;
+  --muted: #6b7280;
+  --primary: #007aff;
+  --accent: #7c5cff;
+  --success: #16a34a;
+  --error: #ef4444;
+  --glass: rgba(255, 255, 255, 0.6);
+  --radius: 14px;
+  --shadow-lg: 0 20px 40px rgba(2, 6, 23, 0.08);
+  --transition: 300ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+:root.dark {
+  --bg: linear-gradient(180deg, #07111b, #081428);
+  --card: rgba(255, 255, 255, 0.02);
+  --text: #e6eef8;
+  --muted: #9aa8bd;
+  --primary: #3aa0ff;
+  --accent: #b27cff;
+  --glass: rgba(255, 255, 255, 0.02);
+  --shadow-lg: 0 24px 50px rgba(2, 6, 23, 0.6);
+}
+
+/* Base */
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial;
+  background: var(--bg);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  transition: background var(--transition), color var(--transition);
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* app layout */
+.app {
+  max-width: 980px;
+  margin: 48px auto;
+  padding: 18px;
+}
+
+/* header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.logo {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateZ(0);
+}
+.title {
+  font-size: 18px;
+  font-weight: 600;
+}
+.small {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* toggle button (vibrant) */
+.theme-toggle {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.45)
+  );
+  cursor: pointer;
+  transition: transform 220ms ease, box-shadow 220ms ease,
+    background var(--transition);
+}
+:root.dark .theme-toggle {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.theme-toggle .knob {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #fff, #f3f6ff);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.08);
+  transition: transform 280ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+:root.dark .theme-toggle .knob {
+  background: linear-gradient(180deg, #0f1724, #0b1220);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
+}
+
+/* card */
+.card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow-lg);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.card:hover {
+  transform: translateY(-6px);
+}
+
+/* center */
+.center {
+  max-width: 520px;
+  margin: 28px auto;
+  border-radius: 16px;
+}
+
+/* inputs & buttons */
+.input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(2, 6, 23, 0.06);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.4)
+  );
+  outline: none;
+  font-size: 15px;
+  transition: box-shadow var(--transition), transform var(--transition);
+}
+:root.dark .input {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.04);
+}
+.input:focus {
+  box-shadow: 0 12px 30px rgba(0, 122, 255, 0.12);
+  transform: translateY(-3px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 14px;
+  border-radius: 12px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 700;
+  background: var(--primary);
+  color: white;
+  transition: transform 220ms ease, box-shadow 220ms ease;
+  box-shadow: 0 10px 30px rgba(0, 122, 255, 0.12);
+}
+.btn:hover {
+  transform: translateY(-4px);
+}
+
+/* pulse for add */
+.spinner {
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  border-top-color: rgba(255, 255, 255, 0.9);
+  animation: spin 800ms linear infinite;
+  margin-left: 8px;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* popup */
+.popup {
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  z-index: 9999;
+  min-width: 220px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  color: white;
+  font-weight: 700;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.98);
+  pointer-events: none;
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1), opacity 200ms ease;
+  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.16);
+}
+.popup.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.popup .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+.popup.success {
+  background: linear-gradient(
+    90deg,
+    var(--success),
+    color-mix(in srgb, var(--success) 65%, black 5%)
+  );
+}
+.popup.error {
+  background: linear-gradient(
+    90deg,
+    var(--error),
+    color-mix(in srgb, var(--error) 65%, black 5%)
+  );
+}
+
+/* tasks grid */
+.tasks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+.task-card {
+  padding: 14px;
+  border-radius: 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.5)
+  );
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.06);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+:root.dark .task-card {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.02),
+    rgba(255, 255, 255, 0.01)
+  );
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.36);
+}
+.task-card:hover {
+  transform: translateY(-8px);
+}
+
+/* fade */
+.fade-in {
+  animation: fadeIn 0.45s ease both;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* responsive */
+@media (max-width: 640px) {
+  .app {
+    padding: 12px;
+    margin: 18px auto;
+  }
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+}
