@@ -8,6 +8,7 @@
   const addBtn = document.getElementById("addTaskBtn");
   const logoutBtn = document.getElementById("logoutBtn");
   const themeToggleBtn = document.getElementById("themeToggle");
+  const darkSwitch = document.getElementById("darkSwitch"); // new switch element
 
   const colPending = document.getElementById("col-pending");
   const colInProgress = document.getElementById("col-inprogress");
@@ -30,12 +31,21 @@
     setTimeout(() => popup.classList.remove("show"), 2400);
   }
 
-  // theme toggle (keeps existing behavior)
+  // theme toggle — use switch if available, otherwise fallback to button behavior
   (function initTheme() {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") document.documentElement.classList.add("dark");
 
-    if (themeToggleBtn) {
+    // If there's a real switch checkbox (#darkSwitch), use it
+    if (darkSwitch) {
+      darkSwitch.checked = document.documentElement.classList.contains("dark");
+      darkSwitch.addEventListener("change", () => {
+        const isDark = darkSwitch.checked;
+        document.documentElement.classList.toggle("dark", isDark);
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+      });
+    } else if (themeToggleBtn) {
+      // legacy fallback: keep the previous behavior for the button
       themeToggleBtn.innerHTML = `<div class="theme-toggle"><div class="knob"></div></div>`;
       themeToggleBtn.style.border = "none";
 
@@ -208,7 +218,8 @@
         }
 
         try {
-          const res = await fetch(`/api/todos/${id}`, {
+          // <-- FIXED: use query param id= (matches single-file todos handler)
+          const res = await fetch(`/api/todos?id=${encodeURIComponent(id)}`, {
             method: "PUT",
             credentials: "include",
             headers: { "Content-Type": "application/json" },
@@ -244,6 +255,7 @@
       addBtn.appendChild(spinner);
 
       try {
+        // send status pending so tasks appear in To-Do column
         const res = await fetch("/api/todos", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -29,8 +29,17 @@ export async function onRequest({ request, env }) {
   // CREATE TASK (POST)
   // -----------------------
   if (method === "POST") {
-    const { task } = await request.json();
-    const status = "todo"; // default column
+    // accept status from client if provided, otherwise default to 'pending'
+    const body = await request.json();
+    const task = body.task;
+    const status = body.status || "pending";
+
+    if (!task) {
+      return new Response(JSON.stringify({ error: "Missing task" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     const result = await env.DB.prepare(
       "INSERT INTO tasks (task, status, user_id) VALUES (?, ?, ?)"
@@ -50,7 +59,14 @@ export async function onRequest({ request, env }) {
   if (method === "PUT") {
     if (!id) return new Response("Missing id", { status: 400 });
 
-    const { status } = await request.json();
+    const body = await request.json();
+    const status = body.status;
+    if (!status) {
+      return new Response(JSON.stringify({ error: "Missing status" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
 
     await env.DB.prepare(
       "UPDATE tasks SET status = ? WHERE id = ? AND user_id = ?"
