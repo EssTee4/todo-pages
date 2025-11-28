@@ -8,4 +8,4 @@ pages_build_output_dir = "./public"
 [[d1_databases]]
 binding = "DB"
 database_name = "todo_db"
-database_id = "39057c31-100b-49d3-b6c6-0ea87b9f168a"
+database_id = "193d518a-91dd-4db3-a797-3447aa90b69c"
