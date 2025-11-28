@@ -398,3 +398,64 @@ body {
   filter: saturate(0.9);
   border-left: 4px solid rgba(0, 0, 0, 0.06);
 }
+
+/* ========== Aesthetic Dark Mode Switch ========== */
+
+.theme-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--glass);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: background var(--transition), border var(--transition);
+}
+
+:root.dark .theme-switch {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.switch-label {
+  font-size: 14px;
+  color: var(--text);
+  font-weight: 600;
+  user-select: none;
+}
+
+.switch-track {
+  width: 48px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 999px;
+  position: relative;
+  transition: background var(--transition);
+}
+
+:root.dark .switch-track {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.switch-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1),
+    background var(--transition), box-shadow var(--transition);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+:root.dark .switch-thumb {
+  background: #dbe4f0;
+}
+
+/* move thumb when dark */
+:root.dark .switch-thumb {
+  transform: translateX(24px);
+}
