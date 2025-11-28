@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="fade-in">
-    <div class="app-shell">
-      <div class="header card">
+    <div class="app">
+      <header class="header">
         <div class="brand">
           <div class="logo">TD</div>
           <div>
@@ -16,24 +16,43 @@
             <div class="small">Organize your day</div>
           </div>
         </div>
-
-        <div class="controls">
-          <button id="themeToggle" class="btn ghost small">Toggle Theme</button>
-          <a class="btn secondary" href="register.html">Register</a>
+        <div class="row">
+          <button
+            id="themeToggle"
+            class="btn"
+            style="
+              background: transparent;
+              color: var(--text);
+              border: 1px solid rgba(0, 0, 0, 0.06);
+            "
+          >
+            Toggle
+          </button>
+          <a
+            href="register.html"
+            class="btn"
+            style="
+              background: transparent;
+              border: 1px solid rgba(0, 0, 0, 0.06);
+              color: var(--text);
+            "
+            >Register</a
+          >
         </div>
-      </div>
+      </header>
 
-      <div class="center card">
+      <main class="center card">
         <h2>Welcome back</h2>
-        <p class="small">Log in to continue</p>
+        <p class="small">Sign in to continue</p>
 
-        <form id="loginForm" style="margin-top: 12px">
+        <form id="loginForm" style="margin-top: 16px">
           <input
             id="username"
             class="input"
             placeholder="Username"
             autocomplete="username"
           />
+          <div style="height: 10px"></div>
           <input
             id="password"
             type="password"
@@ -41,12 +60,12 @@
             placeholder="Password"
             autocomplete="current-password"
           />
-          <div style="height: 8px"></div>
-          <button class="btn" id="loginBtn" type="submit">Sign in</button>
+          <div style="height: 12px"></div>
+          <button id="loginBtn" class="btn" type="submit">Sign in</button>
         </form>
-      </div>
+      </main>
 
-      <div id="popup" class="popup" aria-live="polite" role="status">
+      <div id="popup" class="popup" role="status" aria-live="polite">
         <div class="dot"></div>
         <div id="popupText"></div>
       </div>

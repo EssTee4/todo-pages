@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="fade-in">
-    <div class="app-shell">
-      <div class="header card">
+    <div class="app">
+      <header class="header">
         <div class="brand">
           <div class="logo">TD</div>
           <div>
@@ -16,14 +16,32 @@
             <div class="small">Join and start organizing</div>
           </div>
         </div>
-
-        <div class="controls">
-          <button id="themeToggle" class="btn ghost small">Toggle Theme</button>
-          <a class="btn ghost" href="login.html">Login</a>
+        <div class="row">
+          <button
+            id="themeToggle"
+            class="btn"
+            style="
+              background: transparent;
+              color: var(--text);
+              border: 1px solid rgba(0, 0, 0, 0.06);
+            "
+          >
+            Toggle
+          </button>
+          <a
+            href="login.html"
+            class="btn"
+            style="
+              background: transparent;
+              border: 1px solid rgba(0, 0, 0, 0.06);
+              color: var(--text);
+            "
+            >Login</a
+          >
         </div>
-      </div>
+      </header>
 
-      <div class="center card">
+      <main class="center card">
         <h2>Create account</h2>
         <p class="small">Minimum 8 characters password</p>
 
@@ -34,6 +52,7 @@
             placeholder="Username"
             autocomplete="username"
           />
+          <div style="height: 10px"></div>
           <input
             id="password"
             type="password"
@@ -41,6 +60,7 @@
             placeholder="Password (min 8 chars)"
             autocomplete="new-password"
           />
+          <div style="height: 10px"></div>
           <input
             id="confirm_password"
             type="password"
@@ -48,14 +68,14 @@
             placeholder="Confirm password"
             autocomplete="new-password"
           />
-          <div style="height: 8px"></div>
-          <button class="btn" id="registerBtn" type="submit">
+          <div style="height: 12px"></div>
+          <button id="registerBtn" class="btn" type="submit">
             Create account
           </button>
         </form>
-      </div>
+      </main>
 
-      <div id="popup" class="popup" aria-live="polite" role="status">
+      <div id="popup" class="popup" role="status" aria-live="polite">
         <div class="dot"></div>
         <div id="popupText"></div>
       </div>

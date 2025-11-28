@@ -1,9 +1,9 @@
-// Register with confirm password & min length
+// register.js
 (function () {
   const form = document.getElementById("registerForm");
   const popup = document.getElementById("popup");
   const popupText = document.getElementById("popupText");
-  const themeToggle = document.querySelectorAll("#themeToggle");
+  const themeToggle = document.getElementById("themeToggle");
 
   function showPopup(msg, type = "success") {
     popupText.textContent = msg;
@@ -13,19 +13,17 @@
     setTimeout(() => popup.classList.remove("show"), 2600);
   }
 
-  // theme initialization
   (function () {
     const saved = localStorage.getItem("theme");
     if (saved === "dark") document.documentElement.classList.add("dark");
-    themeToggle.forEach((b) =>
-      b.addEventListener("click", () => {
+    if (themeToggle)
+      themeToggle.addEventListener("click", () => {
         document.documentElement.classList.toggle("dark");
         localStorage.setItem(
           "theme",
           document.documentElement.classList.contains("dark") ? "dark" : "light"
         );
-      })
-    );
+      });
   })();
 
   form.addEventListener("submit", async (e) => {
@@ -35,11 +33,11 @@
     const confirm = document.getElementById("confirm_password").value;
 
     if (!username || !password || !confirm) {
-      showPopup("Please fill all fields", "error");
+      showPopup("Fill all fields", "error");
       return;
     }
     if (password.length < 8) {
-      showPopup("Password must be at least 8 characters", "error");
+      showPopup("Password must be at least 8 chars", "error");
       return;
     }
     if (password !== confirm) {
@@ -54,13 +52,14 @@
         body: JSON.stringify({ username, password, confirm }),
         credentials: "include",
       });
-      const data = await res.json();
+      const body = await res.json();
       if (!res.ok) {
-        showPopup(data.error || "Registration failed", "error");
+        showPopup(body.error || "Registration failed", "error");
         return;
       }
+
       showPopup("Account created", "success");
-      setTimeout(() => (location.href = "/login.html"), 700);
+      setTimeout(() => location.replace("/login.html"), 700);
     } catch (err) {
       console.error(err);
       showPopup("Network error", "error");

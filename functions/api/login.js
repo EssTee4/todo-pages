@@ -31,11 +31,11 @@ export const onRequestPost = async ({ request, env }) => {
       .bind(token, user.id)
       .run();
 
+    // On Cloudflare Pages (HTTPS) keeping Secure; remove Secure for local http testing
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
-        // cookie — HttpOnly so JS can't read it. Secure is fine on Cloudflare Pages (HTTPS).
         "Set-Cookie": `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax`,
       },
     });

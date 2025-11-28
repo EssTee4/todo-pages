@@ -12,12 +12,14 @@ export const onRequestPost = async ({ request, env }) => {
         headers: { "Content-Type": "application/json" },
       });
     }
+
     if (password.length < 8) {
       return new Response(
         JSON.stringify({ error: "Password must be at least 8 characters" }),
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
+
     if (password !== confirm) {
       return new Response(JSON.stringify({ error: "Passwords do not match" }), {
         status: 400,

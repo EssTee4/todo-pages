@@ -1,6 +1,7 @@
+// helper to get user_id from session cookie
 export async function getUserFromSession(request, env) {
-  const cookieHeader = request.headers.get("Cookie") || "";
-  const m = cookieHeader.match(/(?:^|;\s*)session=([A-Za-z0-9\-\_]+)/);
+  const cookie = request.headers.get("Cookie") || "";
+  const m = cookie.match(/(?:^|;\s*)session=([A-Za-z0-9\-\_]+)/);
   if (!m) return null;
   const token = m[1];
   const row = await env.DB.prepare(
