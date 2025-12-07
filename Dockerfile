@@ -16,8 +16,6 @@ COPY . .
 # Build the project (if there's a build step; if not, skip)
 # RUN npm run build
 
-# Expose port — adjust if your app uses a different port
-EXPOSE 3000
 
 # Start the app — adjust if your start script is different
 CMD ["npm", "start"]
